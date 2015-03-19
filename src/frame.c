@@ -6,65 +6,65 @@
  * @bug     No known bugs.
  */
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <stdio.h>
 #include <assert.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <giblib/giblib.h>
 
 #include "frame.h"
 
-int get_shift(int mask);
+Display *disp = NULL;
+Visual *vis = NULL;
+Screen *scr = NULL;
+Colormap cm;
+int depth;
+Window root = 0;
 
-struct frame_t grab_frame(void) {
-    XImage  *img;
-    Display *dpl;
-    Screen  *scr;
-    struct frame_t frame;
-    int x, y;
+DATA32 *grab_frame(void) {
+    DATA32 *buf;
+    Imlib_Image im;
 
-    dpl = XOpenDisplay(NULL);
-    assert(dpl);
+    buf = (unsigned char *) malloc(sizeof(unsigned char) * scr->width*scr->height);
+    assert(buf);
 
-    scr = XDefaultScreenOfDisplay(dpl);
-    assert(scr);
+    im = imlib_create_image(scr->width, scr->height);
 
-    frame.width  = XWidthOfScreen(scr);
-    frame.height = XHeightOfScreen(scr);
+    imlib_context_set_image(im);
+    imlib_context_set_display(disp);
+    imlib_context_set_visual(vis);
+    imlib_context_set_drawable(root);
+    imlib_context_set_colormap(cm);
+    imlib_context_set_color_modifier(NULL);
+    imlib_context_set_operation(IMLIB_OP_COPY);
 
-    img = XGetImage(dpl, RootWindow(dpl, DefaultScreen(dpl)),
-          0, 0, frame.width, frame.height, AllPlanes, ZPixmap);
+    imlib_copy_drawable_to_image(0, 0, 0, scr->width, scr->height, 0, 0, 1);
 
-    fprintf(stdout,"P6\n%d %d\n255\n",img->width, img->height);
-    for (x = 0; x < frame.width; x++) {
-        for (y = 0; y < frame.height; y++) {
-            unsigned long pixel;
+    buf = imlib_image_get_data_for_reading_only();
 
-            pixel = XGetPixel(img, x, y);
-        }
+    puts(buf);
+
+    imlib_free_image();
+    return buf;
+}
+
+int init_x_and_imlib(char *dispstr, int screen_num) {
+    disp = XOpenDisplay(dispstr);
+    
+    if (!disp) {
+        fputs("error: could not open display", stderr);
+        return 1;
     }
-
-    return frame;
+    
+    if (screen_num)
+       scr = ScreenOfDisplay(disp, screen_num);
+    else
+       scr = ScreenOfDisplay(disp, DefaultScreen(disp));
+    
+    vis   = DefaultVisual  (disp, XScreenNumberOfScreen(scr));
+    depth = DefaultDepth   (disp, XScreenNumberOfScreen(scr));
+    cm    = DefaultColormap(disp, XScreenNumberOfScreen(scr));
+    root  = RootWindow     (disp, XScreenNumberOfScreen(scr));
+    
+    return 0;
 }
-
-#if 0
-void init_x_and_imlib(char *dispstr, int screen_num)
-   disp = XOpenDisplay(dispstr);
-   if (!disp)
-      gib_eprintf("Can't open X display. It *is* running, yeah?");
-   if (screen_num)
-      scr = ScreenOfDisplay(disp, screen_num);
-   else
-      scr = ScreenOfDisplay(disp, DefaultScreen(disp));
-
-   vis = DefaultVisual(disp, XScreenNumberOfScreen(scr));
-   depth = DefaultDepth(disp, XScreenNumberOfScreen(scr));
-   cm = DefaultColormap(disp, XScreenNumberOfScreen(scr));
-   root = RootWindow(disp, XScreenNumberOfScreen(scr));
-
-   imlib_context_set_display(disp);
-   imlib_context_set_visual(vis);
-   imlib_context_set_colormap(cm);
-   imlib_context_set_color_modifier(NULL);
-   imlib_context_set_operation(IMLIB_OP_COPY);
-}
-#end if

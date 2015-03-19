@@ -9,12 +9,7 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-struct frame_t {
-    int width;
-    int height;
-    char *buf;
-};
-
-struct frame_t grab_frame(void);
+DATA32 *grab_frame(void);
+int init_x_and_imlib(char *dispstr, int screen_num);
 
 #endif /* FRAME_H */
