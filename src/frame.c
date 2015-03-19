@@ -10,7 +10,7 @@
 #include <assert.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <giblib/giblib.h>
+#include <Imlib2.h>
 
 #include "frame.h"
 
@@ -24,9 +24,6 @@ Window root = 0;
 DATA32 *grab_frame(void) {
     DATA32 *buf;
     Imlib_Image im;
-
-    buf = (unsigned char *) malloc(sizeof(unsigned char) * scr->width*scr->height);
-    assert(buf);
 
     im = imlib_create_image(scr->width, scr->height);
 
@@ -42,9 +39,6 @@ DATA32 *grab_frame(void) {
 
     buf = imlib_image_get_data_for_reading_only();
 
-    puts(buf);
-
-    imlib_free_image();
     return buf;
 }
 
