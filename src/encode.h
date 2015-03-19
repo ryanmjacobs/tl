@@ -9,4 +9,6 @@
 #ifndef ENCODE_H
 #define ENCODE_H
 
+void encode_video(const char *filename, int codec_id);
+
 #endif /* ENCODE_H */

@@ -6,13 +6,16 @@
  */
 
 #include <Imlib2.h>
+#include <libavcodec/avcodec.h>
+
 #include "frame.h"
+#include "encode.h"
 
 int main(int argc, char **argv) {
     init_x_and_imlib(":0", 0);
 
-    grab_frame();
-    imlib_free_image();
+    avcodec_register_all();
+    encode_video("out.h264", AV_CODEC_ID_H264);
 
     return 0;
 }

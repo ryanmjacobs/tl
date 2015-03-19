@@ -16,7 +16,7 @@
 #include <libavutil/mathematics.h>
 
 // http://ffmpeg.org/doxygen/trunk/doc_2examples_2decoding_encoding_8c-example.html
-static void video_encode_example(const char *filename, int codec_id) {
+void encode_video(const char *filename, int codec_id) {
     AVCodec *codec;
     AVCodecContext *c= NULL;
     int i, ret, x, y, got_output;
@@ -24,7 +24,7 @@ static void video_encode_example(const char *filename, int codec_id) {
     AVFrame *frame;
     AVPacket pkt;
     uint8_t endcode[] = { 0, 0, 1, 0xb7 };
-    printf("Encode video file %s\n", filename);
+
     /* find the mpeg1 video encoder */
     codec = avcodec_find_encoder(codec_id);
     if (!codec) {
@@ -80,6 +80,12 @@ static void video_encode_example(const char *filename, int codec_id) {
         pkt.data = NULL;    // packet data will be allocated by the encoder
         pkt.size = 0;
         fflush(stdout);
+
+      //grab_frame();
+      //imlib_free_image();
+        sleep(1);
+        printf("Frame %d\n", i);
+
         /* prepare a dummy image */
         /* Y */
         for (y = 0; y < c->height; y++) {
