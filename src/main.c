@@ -5,6 +5,10 @@
  * @bug     No known bugs.
  */
 
+#include "frame.h"
+
 int main(int argc, char **argv) {
+    grab_frame();
+
     return 0;
 }
