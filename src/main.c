@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     init_x_and_imlib(":0", 0);
 
     avcodec_register_all();
-    encode_loop("out.h264", args.frames, args.delay, args.framerate);
+    encode_loop(args.fname, args.frames, args.delay, args.framerate);
 
     return 0;
 }

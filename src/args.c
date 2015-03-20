@@ -22,6 +22,7 @@ static const char *help_msg =
     "  -f,   --frames             Number of frames to record. 0 means infinite\n"
     "  -d,   --delay              Delay in seconds between each screenshot\n"
     "  -r,   --framerate          Set playback fps for the encoded video\n"
+    "  -o,   --output             Name of output file\n"
     "  -h,   --help               Display this help and exit\n"
     "        --version            Display version information and exit\n\n";
 
@@ -29,6 +30,7 @@ static const struct option long_options[] = {
     { "frames",      optional_argument, NULL, 'f'          },
     { "delay",       optional_argument, NULL, 'd'          },
     { "rate",        optional_argument, NULL, 'r'          },
+    { "output",      optional_argument, NULL, 'o'          },
     { "help",        optional_argument, NULL, 'h'          },
     { "version",     no_argument,       NULL,  OPT_VERSION },
     { NULL, 0, NULL, 0 }
@@ -38,11 +40,12 @@ struct args_t parse_args(int argc, char **argv) {
     struct args_t args = {
         .frames    = 0,       // aka infinite
         .delay     = 1000000, // 1s
-        .framerate = 20
+        .framerate = 20,
+        .fname     = "timelapse.h264"
     };
 
     char c;
-    while ((c = getopt_long(argc, argv, "f:d:r:hv", long_options, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "f:d:r:o:hv", long_options, NULL)) != -1) {
         switch (c) {
             case 'f':
                 if ((args.frames = atoi(optarg)) < 0) {
@@ -61,6 +64,9 @@ struct args_t parse_args(int argc, char **argv) {
                     fprintf(stderr, "error: '%s' is not a valid framerate\n", optarg);
                     exit(1);
                 }
+                break;
+            case 'o':
+                args.fname = optarg;
                 break;
             case 'h':
                 fprintf(stdout, help_msg, argv[0]);
