@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-c -Wall -g -std=c99 -pedantic
+CFLAGS=-c -Wall -std=c99 -pedantic
 LDFLAGS=-lX11 -lImlib2 -lavutil -lavformat -lavcodec -lm -lswscale
 SOURCES=$(shell find src/ -type f -name '*.c')
 OBJECTS=$(SOURCES:.c=.o)

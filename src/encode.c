@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <libswscale/swscale.h>
 
@@ -25,10 +26,13 @@ extern int CAUGHT_SIGINT;
 #define RNDTO2(X) ( ( (X) & 0xFFFFFFFE )
 #define RNDTO32(X) ( ( (X) % 32 ) ? ( ( (X) + 32 ) & 0xFFFFFFE0 ) : (X) )
 
-void encode_loop(const char *filename) {
+void encode_loop(const char *filename, long long int frames, unsigned int delay,
+                 int framerate)
+{
     AVCodec *codec;
     AVCodecContext *c= NULL;
-    int i, ret, got_output;
+    int ret, got_output;
+    unsigned int i = 0;
     FILE *f;
     AVFrame *frame;
     AVPacket pkt;
@@ -52,7 +56,7 @@ void encode_loop(const char *filename) {
     c->width  = get_frame_width();
     c->height = get_frame_height();
     /* frames per second */
-    c->time_base = (AVRational){1,25};
+    c->time_base = (AVRational){1,framerate};
     c->gop_size = 10; /* emit one intra frame every ten frames */
     c->max_b_frames = 1;
     c->pix_fmt = AV_PIX_FMT_YUV420P;
@@ -83,32 +87,37 @@ void encode_loop(const char *filename) {
         fprintf(stderr, "Could not allocate raw picture buffer\n");
         exit(1);
     }
-    /* encode 60 seconds of video */
-    for (i = 0; i < 25*60; i++, sleep(1)) {
-        unsigned char *rgb_buf;
 
+    /* will we be running forever? */
+    int inf = 0;
+    if (frames == 0)
+        inf=1;
+
+    while (1) {
         if (CAUGHT_SIGINT)
             break;
+
+        if (!inf && --frames < 0)
+            break;
+
+        usleep(delay);
 
         av_init_packet(&pkt);
         pkt.data = NULL;    // packet data will be allocated by the encoder
         pkt.size = 0;
         fflush(stdout);
 
-        rgb_buf = grab_frame();
-        printf("Frame %d\n", i);
-
         struct SwsContext *ctx =
             sws_getContext(c->width, c->height, AV_PIX_FMT_RGB24,
                            c->width, c->height, AV_PIX_FMT_YUV420P,
                            0, 0, 0, 0);
 
+        unsigned char *rgb_buf = grab_frame();
         const uint8_t *data_in[1] = { rgb_buf };
         int inline_size[1]  = { 3*c->width };
         sws_scale(ctx, data_in, inline_size, 0, c->height,
                   frame->data, frame->linesize);
 
-        free(rgb_buf);
         frame->pts = i;
         /* encode the image */
         ret = avcodec_encode_video2(c, &pkt, frame, &got_output);
@@ -117,10 +126,12 @@ void encode_loop(const char *filename) {
             exit(1);
         }
         if (got_output) {
-            printf("Write frame %3d (size=%5d)\n", i, pkt.size);
+            printf("Wrote frame %d (size=%d)\n", i++, pkt.size);
             fwrite(pkt.data, 1, pkt.size, f);
             av_free_packet(&pkt);
         }
+
+        free(rgb_buf);
     }
     /* get the delayed frames */
     for (got_output = 1; got_output; i++) {
