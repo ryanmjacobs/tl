@@ -50,7 +50,6 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
         exit(1);
     }
     /* put sample parameters */
-    av_opt_set_int(c, "crf", 20, AV_OPT_SEARCH_CHILDREN);
   //c->bit_rate = 400000;
     /* resolution must be a multiple of two */
     c->width  = get_frame_width();
@@ -60,7 +59,10 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
     c->gop_size = 10; /* emit one intra frame every ten frames */
     c->max_b_frames = 1;
     c->pix_fmt = AV_PIX_FMT_YUV420P;
-  //av_opt_set(c->priv_data, "preset", "slow", 0);
+
+    av_opt_set(c->priv_data, "preset", "slow", 0);
+    av_opt_set_int(c, "crf", 20, AV_OPT_SEARCH_CHILDREN);
+
     /* open it */
     if (avcodec_open2(c, codec, NULL) < 0) {
         fprintf(stderr, "Could not open codec\n");
