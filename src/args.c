@@ -40,7 +40,7 @@ struct args_t parse_args(int argc, char **argv) {
     struct args_t args = {
         .frames    = 0,       // aka infinite
         .delay     = 1000000, // 1s
-        .framerate = 20,
+        .framerate = 15,
         .fname     = "timelapse.h264"
     };
 
