@@ -10,8 +10,8 @@
 #define ARGS_H
 
 struct args_t {
-    unsigned int frame_rate;  /* encoded playback framerate */
-    double delay;             /* delay between each screenshot (in seconds) */
+    int framerate;   /* encoded playback framerate */
+    double delay;    /* delay between each screenshot (in seconds) */
 };
 
 struct args_t parse_args(int argc, char **argv);
