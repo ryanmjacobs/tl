@@ -6,6 +6,7 @@
  */
 
 #include <signal.h>
+#include <unistd.h>
 
 #include <Imlib2.h>
 #include <libavcodec/avcodec.h>
@@ -28,6 +29,12 @@ int main(int argc, char **argv) {
 
     avcodec_register_all();
     encode_loop(args.fname, args.frames, args.delay, args.framerate);
+
+    /* quick hack to get an mp4 container */
+    char cmd[256];
+    sprintf(cmd, "ffmpeg -y -i '%s' %s.mp4", args.fname, args.fname);
+    system(cmd);
+    unlink(args.fname);
 
     return 0;
 }
