@@ -20,21 +20,22 @@
 
 #include "frame.h"
 
+extern int CAUGHT_SIGINT;
+
 #define RNDTO2(X) ( ( (X) & 0xFFFFFFFE )
 #define RNDTO32(X) ( ( (X) % 32 ) ? ( ( (X) + 32 ) & 0xFFFFFFE0 ) : (X) )
 
-// http://ffmpeg.org/doxygen/trunk/doc_2examples_2decoding_encoding_8c-example.html
-void encode_video(const char *filename, int codec_id) {
+void encode_loop(const char *filename) {
     AVCodec *codec;
     AVCodecContext *c= NULL;
-    int i, ret, x, y, got_output;
+    int i, ret, got_output;
     FILE *f;
     AVFrame *frame;
     AVPacket pkt;
     uint8_t endcode[] = { 0, 0, 1, 0xb7 };
 
     /* find the mpeg1 video encoder */
-    codec = avcodec_find_encoder(codec_id);
+    codec = avcodec_find_encoder(AV_CODEC_ID_H264);
     if (!codec) {
         fprintf(stderr, "Codec not found\n");
         exit(1);
@@ -55,8 +56,7 @@ void encode_video(const char *filename, int codec_id) {
     c->gop_size = 10; /* emit one intra frame every ten frames */
     c->max_b_frames = 1;
     c->pix_fmt = AV_PIX_FMT_YUV420P;
-    if (codec_id == AV_CODEC_ID_H264)
-        av_opt_set(c->priv_data, "preset", "slow", 0);
+  //av_opt_set(c->priv_data, "preset", "slow", 0);
     /* open it */
     if (avcodec_open2(c, codec, NULL) < 0) {
         fprintf(stderr, "Could not open codec\n");
@@ -84,15 +84,17 @@ void encode_video(const char *filename, int codec_id) {
         exit(1);
     }
     /* encode 60 seconds of video */
-    for (i = 0; i < 25*60; i++) {
+    for (i = 0; i < 25*60; i++, sleep(1)) {
         unsigned char *rgb_buf;
+
+        if (CAUGHT_SIGINT)
+            break;
 
         av_init_packet(&pkt);
         pkt.data = NULL;    // packet data will be allocated by the encoder
         pkt.size = 0;
         fflush(stdout);
 
-        sleep(1);
         rgb_buf = grab_frame();
         printf("Frame %d\n", i);
 

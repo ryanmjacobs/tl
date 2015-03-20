@@ -9,6 +9,10 @@
 #ifndef ENCODE_H
 #define ENCODE_H
 
-void encode_video(const char *filename, int codec_id);
+/**
+ * Main encode loop.
+ * Captures RGB frames and writes them to an h264 stream.
+ */
+void encode_loop(const char *filename);
 
 #endif /* ENCODE_H */

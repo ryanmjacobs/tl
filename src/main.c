@@ -5,6 +5,8 @@
  * @bug     No known bugs.
  */
 
+#include <signal.h>
+
 #include <Imlib2.h>
 #include <libavcodec/avcodec.h>
 
@@ -12,13 +14,20 @@
 #include "frame.h"
 #include "encode.h"
 
+int CAUGHT_SIGINT = 0;
+static void sigint_handler(int signal) {
+    CAUGHT_SIGINT = 1;
+}
+
 int main(int argc, char **argv) {
     struct args_t args = parse_args(argc, argv);
+
+    signal(SIGINT, sigint_handler);
 
     init_x_and_imlib(":0", 0);
 
     avcodec_register_all();
-    encode_video("out.h264", AV_CODEC_ID_H264);
+    encode_loop("out.h264");
 
     return 0;
 }
