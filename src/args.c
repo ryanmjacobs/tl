@@ -17,7 +17,7 @@ enum {
 };
 
 static const char *help_msg =
-    "Usage: %s [-h]\n"
+    "Usage: %s [-h] [options...]\n"
     "Record and render timelapses.\n\n"
     "  -d,   --delay              Delay in seconds between each screenshot\n"
     "  -r,   --framerate          Set the playback fps for the encoded video\n"
