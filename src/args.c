@@ -35,11 +35,6 @@ static const struct option long_options[] = {
 struct args_t parse_args(int argc, char **argv) {
     struct args_t args;
 
-    if (argc < 2) {
-        fprintf(stderr, help_msg, argv[0]);
-        exit(1);
-    }
-
     char c;
     while ((c = getopt_long(argc, argv, "d:r:hv", long_options, NULL)) != -1) {
         switch (c) {
