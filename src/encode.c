@@ -6,9 +6,12 @@
  * @bug     No known bugs.
  */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
+
+#include <libswscale/swscale.h>
 
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
@@ -16,6 +19,9 @@
 #include <libavutil/mathematics.h>
 
 #include "frame.h"
+
+#define RNDTO2(X) ( ( (X) & 0xFFFFFFFE )
+#define RNDTO32(X) ( ( (X) % 32 ) ? ( ( (X) + 32 ) & 0xFFFFFFE0 ) : (X) )
 
 // http://ffmpeg.org/doxygen/trunk/doc_2examples_2decoding_encoding_8c-example.html
 void encode_video(const char *filename, int codec_id) {
@@ -39,7 +45,8 @@ void encode_video(const char *filename, int codec_id) {
         exit(1);
     }
     /* put sample parameters */
-    c->bit_rate = 400000;
+    av_opt_set_int(c, "crf", 20, AV_OPT_SEARCH_CHILDREN);
+  //c->bit_rate = 400000;
     /* resolution must be a multiple of two */
     c->width  = get_frame_width();
     c->height = get_frame_height();
@@ -76,8 +83,8 @@ void encode_video(const char *filename, int codec_id) {
         fprintf(stderr, "Could not allocate raw picture buffer\n");
         exit(1);
     }
-    /* encode 1 second of video */
-    for (i = 0; i < 25; i++) {
+    /* encode 60 seconds of video */
+    for (i = 0; i < 25*60; i++) {
         unsigned char *rgb_buf;
 
         av_init_packet(&pkt);
@@ -89,20 +96,16 @@ void encode_video(const char *filename, int codec_id) {
         rgb_buf = grab_frame();
         printf("Frame %d\n", i);
 
-        /* prepare a dummy image */
-        /* Y */
-        for (y = 0; y < c->height; y++) {
-            for (x = 0; x < c->width; x++) {
-                frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
-            }
-        }
-        /* Cb and Cr */
-        for (y = 0; y < c->height/2; y++) {
-            for (x = 0; x < c->width/2; x++) {
-                frame->data[1][y * frame->linesize[1] + x] = 128 + y + i * 2;
-                frame->data[2][y * frame->linesize[2] + x] = 64 + x + i * 5;
-            }
-        }
+        struct SwsContext *ctx =
+            sws_getContext(c->width, c->height, AV_PIX_FMT_RGB24,
+                           c->width, c->height, AV_PIX_FMT_YUV420P,
+                           0, 0, 0, 0);
+
+        const uint8_t *data_in[1] = { rgb_buf };
+        int inline_size[1]  = { 3*c->width };
+        sws_scale(ctx, data_in, inline_size, 0, c->height,
+                  frame->data, frame->linesize);
+
         free(rgb_buf);
         frame->pts = i;
         /* encode the image */

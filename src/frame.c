@@ -7,7 +7,10 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
+#include <string.h>
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <Imlib2.h>
@@ -43,6 +46,9 @@ unsigned char *grab_frame(void) {
 
     data32  = imlib_image_get_data_for_reading_only();
     rgb_buf = data32_to_rgb(data32, scr->width*scr->height);
+
+  //rgb_buf = (unsigned char *) malloc(4*scr->width*scr->height);
+  //memcpy(rgb_buf, data32, 4*scr->width*scr->height);
 
     imlib_free_image();
     return rgb_buf;
