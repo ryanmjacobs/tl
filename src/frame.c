@@ -76,7 +76,6 @@ static unsigned char *data32_to_rgb(DATA32 *data32, int num_pixels) {
         rgb[3*i+2] = b;
     }
 
-    free(rgb);
     return rgb;
 }
 

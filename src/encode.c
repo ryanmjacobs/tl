@@ -85,7 +85,8 @@ void encode_video(const char *filename, int codec_id) {
         pkt.size = 0;
         fflush(stdout);
 
-      //rgb_buf = grab_frame();
+        sleep(1);
+        rgb_buf = grab_frame();
         printf("Frame %d\n", i);
 
         /* prepare a dummy image */
