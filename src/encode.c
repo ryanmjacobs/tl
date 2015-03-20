@@ -15,6 +15,8 @@
 #include <libavutil/imgutils.h>
 #include <libavutil/mathematics.h>
 
+#include "frame.h"
+
 // http://ffmpeg.org/doxygen/trunk/doc_2examples_2decoding_encoding_8c-example.html
 void encode_video(const char *filename, int codec_id) {
     AVCodec *codec;
@@ -39,8 +41,8 @@ void encode_video(const char *filename, int codec_id) {
     /* put sample parameters */
     c->bit_rate = 400000;
     /* resolution must be a multiple of two */
-    c->width = 352;
-    c->height = 288;
+    c->width  = get_frame_width();
+    c->height = get_frame_height();
     /* frames per second */
     c->time_base = (AVRational){1,25};
     c->gop_size = 10; /* emit one intra frame every ten frames */
@@ -76,14 +78,14 @@ void encode_video(const char *filename, int codec_id) {
     }
     /* encode 1 second of video */
     for (i = 0; i < 25; i++) {
+        unsigned char *rgb_buf;
+
         av_init_packet(&pkt);
         pkt.data = NULL;    // packet data will be allocated by the encoder
         pkt.size = 0;
         fflush(stdout);
 
-      //grab_frame();
-      //imlib_free_image();
-        sleep(1);
+      //rgb_buf = grab_frame();
         printf("Frame %d\n", i);
 
         /* prepare a dummy image */
@@ -100,6 +102,7 @@ void encode_video(const char *filename, int codec_id) {
                 frame->data[2][y * frame->linesize[2] + x] = 64 + x + i * 5;
             }
         }
+        free(rgb_buf);
         frame->pts = i;
         /* encode the image */
         ret = avcodec_encode_video2(c, &pkt, frame, &got_output);

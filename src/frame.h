@@ -11,7 +11,9 @@
 
 #include <Imlib2.h>
 
-DATA32 *grab_frame(void);
+int get_frame_width(void);
+int get_frame_height(void);
+unsigned char *grab_frame(void);
 int init_x_and_imlib(char *dispstr, int screen_num);
 
 #endif /* FRAME_H */
