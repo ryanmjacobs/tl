@@ -7,6 +7,7 @@
 
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include <Imlib2.h>
 #include <libavcodec/avcodec.h>
@@ -15,13 +16,18 @@
 #include "frame.h"
 #include "encode.h"
 
-int CAUGHT_SIGINT = 0;
+int STOP_ENCODE = 0;
+struct args_t args;
+
 static void sigint_handler(int signal) {
-    CAUGHT_SIGINT = 1;
+    if (!STOP_ENCODE)
+        STOP_ENCODE = 1;
+    else
+        unlink(args.fname);
 }
 
 int main(int argc, char **argv) {
-    struct args_t args = parse_args(argc, argv);
+    args = parse_args(argc, argv);
 
     signal(SIGINT, sigint_handler);
 
