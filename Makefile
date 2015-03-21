@@ -1,7 +1,13 @@
-CC=gcc
-CFLAGS=-c -O2 -Wall -std=c99 -pedantic
-STATIC=yes
+include config.mk
 
+CC?=gcc
+STRIP?=strip
+CFLAGS=-c -O2 -Wall -std=c99 -pedantic
+SOURCES=$(shell find src/ -type f -name '*.c')
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE?=tl
+
+STATIC?=no
 ifeq ($(STATIC),yes)
 	# Build ffmpeg w/
 	#./configure --prefix=/home/vagrant/builds/usr --enable-libx264 --enable-gpl
@@ -21,9 +27,6 @@ else
 	LDFLAGS=-lX11 -lavformat -lavcodec -lavutil -lswscale -lm
 endif
 
-SOURCES=$(shell find src/ -type f -name '*.c')
-OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=tl
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
