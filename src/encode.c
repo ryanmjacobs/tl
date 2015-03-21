@@ -151,7 +151,7 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
             exit(1);
         }
         if (got_output) {
-            printf("Write frame %3d (size=%5d)\n", i, pkt.size);
+            printf("Wrote frame %3d (size=%5d)\n", i, pkt.size);
             fwrite(pkt.data, 1, pkt.size, f);
             av_free_packet(&pkt);
         }
