@@ -31,6 +31,7 @@ all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	$(STRIP) $(EXECUTABLE)
 
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
