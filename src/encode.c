@@ -26,6 +26,12 @@ extern int STOP_ENCODE;
 #define RNDTO2(X) ( ( (X) & 0xFFFFFFFE )
 #define RNDTO32(X) ( ( (X) % 32 ) ? ( ( (X) + 32 ) & 0xFFFFFFE0 ) : (X) )
 
+// http://stackoverflow.com/questions/24057248/ffmpeg-undefined-references-to-av-frame-alloc
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55,28,1)
+#define av_frame_alloc avcodec_alloc_frame
+#define av_frame_free  avcodec_free_frame
+#endif
+
 void encode_loop(const char *filename, long long int frames, unsigned int delay,
                  int framerate)
 {
