@@ -14,6 +14,7 @@
 
 #include <libswscale/swscale.h>
 
+#include <libavutil/mem.h>
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
 #include <libavutil/imgutils.h>
