@@ -16,18 +16,14 @@
 #include "frame.h"
 #include "encode.h"
 
-int STOP_ENCODE = 0;
-struct args_t args;
+int CAUGHT_SIGINT = 0;
 
 static void sigint_handler(int signal) {
-    if (!STOP_ENCODE)
-        STOP_ENCODE = 1;
-    else
-        unlink(args.fname);
+    CAUGHT_SIGINT = 1;
 }
 
 int main(int argc, char **argv) {
-    args = parse_args(argc, argv);
+    struct args_t args = parse_args(argc, argv);
 
     signal(SIGINT, sigint_handler);
 
@@ -35,11 +31,19 @@ int main(int argc, char **argv) {
     avcodec_register_all();
     encode_loop(args.fname, args.frames, args.delay, args.framerate);
 
-    /* quick hack to get an mp4 container */
-    char cmd[256];
-    sprintf(cmd, "ffmpeg -y -i '%s' %s.mp4", args.fname, args.fname);
-    system(cmd);
-    unlink(args.fname);
+    /* quick hack to get an mp4 container (if we have ffmpeg) */
+    if (!system("which ffmpeg &>/dev/null")) {
+        char cmd[256];
+        sprintf(cmd, "ffmpeg -y -i '%s' %s.mp4", args.fname, args.fname);
+        system(cmd);
+        unlink(args.fname);
+        puts("\n\nEncoding complete! Play w/ `mpv timelapse.h264.mp4`");
+    } else {
+        puts("\n\nWasn't able to dump to an MP4 container :(");
+        puts("But... you can still play it w/ `mpv timelapse.h264`\n");
+        puts("Next time install ffmpeg first: `sudo apt-get install ffmpeg`");
+        puts("(It's optional, but will shrink the file size and play more smoothly.");
+    }
 
     return 0;
 }

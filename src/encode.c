@@ -22,7 +22,7 @@
 
 #include "frame.h"
 
-extern int STOP_ENCODE;
+extern int CAUGHT_SIGINT;
 
 #define RNDTO2(X) ( ( (X) & 0xFFFFFFFE )
 #define RNDTO32(X) ( ( (X) % 32 ) ? ( ( (X) + 32 ) & 0xFFFFFFE0 ) : (X) )
@@ -103,7 +103,7 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
         inf=1;
 
     while (1) {
-        if (STOP_ENCODE)
+        if (CAUGHT_SIGINT)
             break;
 
         if (!inf && --frames < 0)
