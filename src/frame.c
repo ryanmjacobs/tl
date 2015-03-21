@@ -13,95 +13,52 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <Imlib2.h>
-#include <stdint.h>
 
 #include "frame.h"
 
-Display *disp = NULL;
-Visual *vis = NULL;
-Screen *scr = NULL;
-Colormap cm;
-int depth;
-Window root = 0;
+static Screen  *scr;
+static Display *dpl;
 
-static unsigned char *data32_to_rgb(DATA32 *data32, int num_pixels);
+int init_x(void) {
+    dpl = XOpenDisplay(NULL);
+    assert(dpl);
+
+    scr = XDefaultScreenOfDisplay(dpl);
+    assert(scr);
+
+    return 0;
+}
 
 unsigned char *grab_frame(void) {
-    DATA32 *data32;
-    Imlib_Image im;
-    unsigned char *rgb_buf;
+    int width  = XWidthOfScreen(scr);
+    int height = XHeightOfScreen(scr);
 
-    im = imlib_create_image(scr->width, scr->height);
+    XImage *img = XGetImage(dpl, RootWindow(dpl, DefaultScreen(dpl)), 0, 0,
+                            width, height, AllPlanes, ZPixmap);
 
-    imlib_context_set_image(im);
-    imlib_context_set_display(disp);
-    imlib_context_set_visual(vis);
-    imlib_context_set_drawable(root);
-    imlib_context_set_colormap(cm);
-    imlib_context_set_color_modifier(NULL);
-    imlib_context_set_operation(IMLIB_OP_COPY);
+    unsigned char *rgb = malloc(3*width*height);
 
-    imlib_copy_drawable_to_image(0, 0, 0, scr->width, scr->height, 0, 0, 1);
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            unsigned long pixel = XGetPixel(img, x, y);
+            unsigned char blue  = (pixel & img->blue_mask)  >> 0;
+            unsigned char green = (pixel & img->green_mask) >> 8;
+            unsigned char red   = (pixel & img->red_mask)   >> 16;
 
-    data32  = imlib_image_get_data_for_reading_only();
-    rgb_buf = data32_to_rgb(data32, scr->width*scr->height);
-
-  //rgb_buf = (unsigned char *) malloc(4*scr->width*scr->height);
-  //memcpy(rgb_buf, data32, 4*scr->width*scr->height);
-
-    imlib_free_image();
-    return rgb_buf;
-}
-
-int get_frame_width(void) {
-    return scr->width;
-}
-
-int get_frame_height(void) {
-    return scr->height;
-}
-
-static unsigned char *data32_to_rgb(DATA32 *data32, int num_pixels) {
-    unsigned int i;
-    unsigned char *rgb;
-
-    rgb = (unsigned char *) malloc(3*num_pixels);
-    assert(rgb);
-
-    for (i = 0; i < num_pixels; i++) {
-        unsigned char a, r, g, b;
-
-        a = (data32[i] >> 24) & 0xFF;
-        r = (data32[i] >> 16) & 0xFF;
-        g = (data32[i] >>  8) & 0xFF;
-        b = (data32[i] >>  0) & 0xFF;
-
-        rgb[3*i+0] = r;
-        rgb[3*i+1] = g;
-        rgb[3*i+2] = b;
+            rgb[3*(x + width*y) + 0] = red;
+            rgb[3*(x + width*y) + 1] = green;
+            rgb[3*(x + width*y) + 2] = blue;
+        }
     }
 
+    XDestroyImage(img);
     return rgb;
 }
 
-int init_x_and_imlib(char *dispstr, int screen_num) {
-    disp = XOpenDisplay(dispstr);
-    
-    if (!disp) {
-        fputs("error: could not open display", stderr);
-        return 1;
-    }
-    
-    if (screen_num)
-       scr = ScreenOfDisplay(disp, screen_num);
-    else
-       scr = ScreenOfDisplay(disp, DefaultScreen(disp));
-    
-    vis   = DefaultVisual  (disp, XScreenNumberOfScreen(scr));
-    depth = DefaultDepth   (disp, XScreenNumberOfScreen(scr));
-    cm    = DefaultColormap(disp, XScreenNumberOfScreen(scr));
-    root  = RootWindow     (disp, XScreenNumberOfScreen(scr));
-    
-    return 0;
+int get_frame_width(void) {
+    return XWidthOfScreen(scr);
+}
+
+int get_frame_height(void) {
+    return XHeightOfScreen(scr);
 }

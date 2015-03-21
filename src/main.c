@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <Imlib2.h>
 #include <libavcodec/avcodec.h>
 
 #include "args.h"
@@ -32,8 +31,7 @@ int main(int argc, char **argv) {
 
     signal(SIGINT, sigint_handler);
 
-    init_x_and_imlib(":0", 0);
-
+    init_x();
     avcodec_register_all();
     encode_loop(args.fname, args.frames, args.delay, args.framerate);
 
