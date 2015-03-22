@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
     init_x();
     avcodec_register_all();
     encode_loop(args.fname, args.frames, args.delay, args.framerate);
+    free_x();
 
     /* quick hack to get an mp4 container (if we have ffmpeg) */
     if (!system("which ffmpeg &>/dev/null")) {

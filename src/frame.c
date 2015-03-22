@@ -28,6 +28,11 @@ int init_x(void) {
 
     return 0;
 }
+int free_x(void) {
+    XCloseDisplay(dpl);
+
+    return 0;
+}
 
 unsigned char *grab_frame(void) {
     int width  = XWidthOfScreen(scr);

@@ -10,6 +10,7 @@
 #define FRAME_H
 
 int init_x(void);
+int free_x(void);
 unsigned char *grab_frame(void);
 int get_frame_width(void);
 int get_frame_height(void);
