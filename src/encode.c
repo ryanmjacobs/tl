@@ -97,10 +97,8 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
         exit(1);
     }
 
-    /* will we be running forever? */
-    int inf = 0;
-    if (frames == 0)
-        inf=1;
+    /* will we run forever? */
+    int inf = !frames;
 
     while (1) {
         if (CAUGHT_SIGINT)
@@ -141,6 +139,7 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
         }
 
         free(rgb_buf);
+        sws_freeContext(ctx);
     }
     /* get the delayed frames */
     for (got_output = 1; got_output; i++) {
