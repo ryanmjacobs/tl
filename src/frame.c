@@ -65,9 +65,6 @@ unsigned char *grab_frame(void) {
     XImage *img = XGetImage(dpl, RootWindow(dpl, DefaultScreen(dpl)), 0, 0,
                             width, height, AllPlanes, ZPixmap);
 
-    /* we're assuming XRGB */
-    assert(img->bits_per_pixel == 32);
-
     unsigned char *rgb = malloc(3*width*height);
 
     for (int y = 0; y < height; y++) {
