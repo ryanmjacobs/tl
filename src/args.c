@@ -16,6 +16,10 @@ enum {
     OPT_VERSION
 };
 
+static const char *version_msg =
+    "tl v0.01\n"
+    "Copyright (C) 2015 Ryan Jacobs\n";
+
 static const char *help_msg =
     "Usage: %s [-h] [options...]\n"
     "Record and render timelapses.\n\n"
@@ -45,7 +49,7 @@ struct args_t parse_args(int argc, char **argv) {
     };
 
     char c;
-    while ((c = getopt_long(argc, argv, "f:d:r:o:hv", long_options, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "f:d:r:o:h", long_options, NULL)) != -1) {
         switch (c) {
             case 'f':
                 if ((args.frames = atoi(optarg)) < 0) {
@@ -70,6 +74,10 @@ struct args_t parse_args(int argc, char **argv) {
                 break;
             case 'h':
                 fprintf(stdout, help_msg, argv[0]);
+                exit(0);
+                break;
+            case OPT_VERSION:
+                fputs(version_msg, stdout);
                 exit(0);
                 break;
             default:
