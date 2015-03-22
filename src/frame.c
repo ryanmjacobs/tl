@@ -84,7 +84,7 @@ unsigned char *grab_frame(void) {
 // http://www.opensource.apple.com/source/tcl/tcl-95/tk/tk/win/tkWinImage.c
 static struct pixel_t grab_pixel(XImage *img, int x, int y) {
     struct pixel_t p = {0};
-    unsigned char *srcPtr = &(img->data[(y * img->bytes_per_line)
+    unsigned char *srcPtr = (unsigned char *) &(img->data[(y * img->bytes_per_line)
         + ((x * img->bits_per_pixel) / NBBY)]);
 
     switch (img->bits_per_pixel) {
