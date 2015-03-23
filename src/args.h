@@ -10,10 +10,11 @@
 #define ARGS_H
 
 struct args_t {
-    int frames;      /* number of frames to record. 0 means infinite */
-    int delay;       /* delay between each screenshot (in seconds) */
-    int framerate;   /* encoded playback framerate */
-    char *fname;     /* Name of output file */
+    int frames;           /* number of frames to record. 0 means infinite */
+    int delay;            /* delay between each screenshot (in seconds) */
+    int framerate;        /* encoded playback framerate */
+    char *fname;          /* name of output file */
+    char *x_display_name; /* x display name, e.g. :0 */
 };
 
 struct args_t parse_args(int argc, char **argv);

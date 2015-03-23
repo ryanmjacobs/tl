@@ -27,6 +27,7 @@ static const char *help_msg =
     "  -d,   --delay              Delay in seconds between each screenshot\n"
     "  -r,   --framerate          Set playback fps for the encoded video\n"
     "  -o,   --output             Name of output file\n"
+    "  -D,   --display            X display name, default is :0\n"
     "  -h,   --help               Display this help and exit\n"
     "        --version            Display version information and exit\n\n";
 
@@ -35,6 +36,7 @@ static const struct option long_options[] = {
     { "delay",       optional_argument, NULL, 'd'          },
     { "rate",        optional_argument, NULL, 'r'          },
     { "output",      optional_argument, NULL, 'o'          },
+    { "display",     optional_argument, NULL, 'D'          },
     { "help",        optional_argument, NULL, 'h'          },
     { "version",     no_argument,       NULL,  OPT_VERSION },
     { NULL, 0, NULL, 0 }
@@ -42,14 +44,15 @@ static const struct option long_options[] = {
 
 struct args_t parse_args(int argc, char **argv) {
     struct args_t args = {
-        .frames    = 0,       // aka infinite
-        .delay     = 1000000, // 1s
-        .framerate = 15,
-        .fname     = "timelapse.h264"
+        .frames         = 0,       // aka infinite
+        .delay          = 1000000, // 1s
+        .framerate      = 15,
+        .fname          = "timelapse.h264",
+        .x_display_name = ":0"
     };
 
     char c;
-    while ((c = getopt_long(argc, argv, "f:d:r:o:h", long_options, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "f:d:r:o:D:h", long_options, NULL)) != -1) {
         switch (c) {
             case 'f':
                 if ((args.frames = atoi(optarg)) < 0) {
@@ -75,6 +78,9 @@ struct args_t parse_args(int argc, char **argv) {
             case 'h':
                 fprintf(stdout, help_msg, argv[0]);
                 exit(0);
+                break;
+            case 'D':
+                args.x_display_name = optarg;
                 break;
             case OPT_VERSION:
                 fputs(version_msg, stdout);

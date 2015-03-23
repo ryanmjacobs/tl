@@ -19,9 +19,12 @@
 static Screen  *scr;
 static Display *dpl;
 
-int init_x(void) {
-    dpl = XOpenDisplay(NULL);
-    assert(dpl);
+int init_x(const char *display_name) {
+    dpl = XOpenDisplay(display_name);
+    if (dpl == NULL) {
+        fprintf(stderr, "error: could not open X display %s\n", display_name);
+        exit(1);
+    }
 
     scr = XDefaultScreenOfDisplay(dpl);
     assert(scr);
