@@ -1,5 +1,4 @@
-# CC=gcc
-# STRIP=strip
-# EXECUTABLE=tl
-
+CC=gcc
+STRIP=strip
+EXECUTABLE=tl
 STATIC=no
