@@ -2,7 +2,7 @@ include config.mk
 
 CC?=gcc
 STRIP?=strip
-CFLAGS=-c -O2 -Wall -std=c99 -pedantic
+CFLAGS=-c -O2 -Wall -std=c99 -pedantic -D_DEFAULT_SOURCE
 SOURCES=$(shell find src/ -type f -name '*.c')
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE?=tl
