@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <string.h>
 
 #include <X11/Xlib.h>
@@ -39,7 +38,10 @@ int init_x(const char *display_name) {
     }
 
     scr = XDefaultScreenOfDisplay(dpl);
-    assert(scr);
+    if (dpl == NULL) {
+        fputs("error: could not access the default screen of the X display\n", stderr);
+        exit(1);
+    }
 
     return 0;
 }
