@@ -32,17 +32,22 @@ int main(int argc, char **argv) {
     encode_loop(args.fname, args.frames, args.delay, args.framerate);
     free_x();
 
-    /* quick hack to get an mp4 container (if we have ffmpeg) */
+    /**
+     * This is just a quick hack to get an MP4 container by using
+     * ffmpeg externally. If anyone knows how we can get an MP4
+     * container without doing that, *please* submit a pull request
+     * or contact me!
+     */
     if (!system("which ffmpeg &>/dev/null")) {
         char cmd[256];
         sprintf(cmd, "ffmpeg -y -i '%s' %s.mp4", args.fname, args.fname);
         system(cmd);
         unlink(args.fname);
-        puts("\n\nEncoding complete! Play w/ `mpv timelapse.h264.mp4`");
+        puts("\n\nEncode complete!");
     } else {
-        puts("\n\nWasn't able to dump to an MP4 container :(");
-        puts("But... you can still play it w/ `mpv timelapse.h264`\n");
-        puts("Next time install ffmpeg first: `sudo apt-get install ffmpeg`");
+        puts("\n\nWe were not able to dump to an MP4 container :(");
+        puts("You can still play it, but some video players will choke on it.\n");
+        puts("Next time install ffmpeg first: e.g. `sudo apt-get install ffmpeg`");
         puts("(It's optional, but will shrink the file size and play more smoothly.");
     }
 
