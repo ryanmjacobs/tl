@@ -37,7 +37,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm -f $(EXECUTABLE)
+	@rm -vf $(EXECUTABLE)
 	@find src/ -type f -name '*.o' -exec rm -vf {} \;
 
 .PHONY: clean
