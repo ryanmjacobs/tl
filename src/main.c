@@ -22,99 +22,7 @@ static void sigint_handler(int signal) {
     CAUGHT_SIGINT = 1;
 }
 
-// remove_ext: removes the "extension" from a file spec.
-//   mystr is the string to process.
-//   dot is the extension separator.
-//   sep is the path separator (0 means to ignore).
-// Returns an allocated string identical to the original but
-//   with the extension removed. It must be freed when you're
-//   finished with it.
-// If you pass in NULL or the new string can't be allocated,
-//   it returns NULL.
-
-char *remove_ext (char* mystr) {
-    char *retstr, *lastdot, *lastsep;
-
-    // Error checks and allocate string.
-
-    if (mystr == NULL)
-        return NULL;
-    if ((retstr = malloc (strlen (mystr) + 1)) == NULL)
-        return NULL;
-
-    // Make a copy and find the relevant characters.
-
-    strcpy (retstr, mystr);
-    lastdot = strrchr (retstr, '.');
-    lastsep = strrchr (retstr, '/');
-
-    // If it has an extension separator.
-
-    if (lastdot != NULL) {
-        // and it's before the extenstion separator.
-
-        if (lastsep != NULL) {
-            if (lastsep < lastdot) {
-                // then remove it.
-
-                *lastdot = '\0';
-            }
-        } else {
-            // Has extension separator with no path separator.
-
-            *lastdot = '\0';
-        }
-    }
-
-    // Return the modified string.
-
-    return retstr;
-}
-
-static int mp4_wrapper(const char *input) {
-    char cmd[512] = "";
-    const char *dot, *ext;
-
-    /* filename extension */
-    dot = strrchr(input, '.');
-    if (!dot || dot == input)
-        ext = "";
-    else
-        ext = dot+1;
-
-    if (!system("which ffmpeg &>/dev/null")) {
-        strcat(cmd, "ffmpeg -y -i ");
-        strcat(cmd, input);
-    } else if (!system("which avconv &>/dev/null")) {
-        strcat(cmd, "avconv -y -i ");
-        strcat(cmd, input);
-    } else if (!system("which HandBrakeCLI &>/dev/null")) {
-        strcat(cmd, "HandBrakeCLI -i ");
-        strcat(cmd, input);
-        strcat(cmd, " -o");
-    } else {
-        return -1;
-    }
-    strcat(cmd, " ");
-
-    /* determine output filename */
-    if (!strcmp(ext, "h264")) {
-        char *basename = remove_ext(input);
-        strcat(cmd, basename);
-        free(basename);
-    } else {
-        strcat(cmd, input);
-    }
-    strcat(cmd, ".mp4");
-
-    /* run command */
-    puts(cmd);
-    if (system(cmd) == 0) {
-        unlink(input);
-    }
-
-    return 0;
-}
+static int mp4_wrapper(const char *input);
 
 int main(int argc, char **argv) {
     struct args_t args = parse_args(argc, argv);
@@ -132,14 +40,46 @@ int main(int argc, char **argv) {
      * container without doing that, *please* submit a pull request
      * or contact me!
      */
-    if (!system("which ffmpeg &>/dev/null")) {
-        mp4_wrapper(args.fname);
-        puts("\n\nEncode complete!");
-    } else {
-        puts("\n\nWe were not able to dump to an MP4 container :(");
+    if (mp4_wrapper(args.fname) != 0) {
+        puts("We were not able to dump to an MP4 container :(");
         puts("You can still play it, but some video players will choke on it.\n");
-        puts("Next time install ffmpeg first: e.g. `sudo apt-get install ffmpeg`");
+        puts("Next time install ffmpeg/avconv first: e.g. `sudo apt-get install ffmpeg`");
         puts("(It's optional, but will shrink the file size and play more smoothly.");
+    }
+
+    return 0;
+}
+
+/**
+ * Quick hack... see main() for more info.
+ */
+static int mp4_wrapper(const char *input) {
+    char cmd[512] = "";
+
+    /* use ffmpeg/avconv (whichever is available) */
+    if (!system("which ffmpeg &>/dev/null")) {
+        strcat(cmd, "ffmpeg -y -i ");
+    } else if (!system("which avconv &>/dev/null")) {
+        strcat(cmd, "avconv -y -i ");
+    } else {
+        return -1;
+    }
+    strcat(cmd, input);
+    strcat(cmd, " -c:v copy -an ");
+
+    /* determine output filename */
+    const char *last4 = input+strlen(input)-4;
+    if (!strcmp(last4, "h264")) {
+        strncat(cmd, input, strlen(input)-5);
+    } else {
+        strcat(cmd, input);
+    }
+    strcat(cmd, ".mp4");
+
+    /* run command */
+    puts(cmd);
+    if (system(cmd) == 0) {
+        unlink(input);
     }
 
     return 0;
