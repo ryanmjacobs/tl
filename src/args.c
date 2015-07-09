@@ -29,7 +29,8 @@ static const char *help_msg =
     "  -o,   --output             Name of output file\n"
     "  -D,   --display            X display name, default is :0\n"
     "  -h,   --help               Display this help and exit\n"
-    "        --version            Display version information and exit\n\n";
+    "        --version            Display version information and exit\n\n"
+    "Report bugs to <ryan.mjacobs@gmail.com>\n";
 
 static const struct option long_options[] = {
     { "frames",      optional_argument, NULL, 'f'          },
