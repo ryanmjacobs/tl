@@ -40,7 +40,12 @@ int main(int argc, char **argv) {
      */
     if (!system("which ffmpeg &>/dev/null")) {
         char cmd[256];
-        sprintf(cmd, "ffmpeg -y -i '%s' %s.mp4", args.fname, args.fname);
+
+        if (!strcmp(args.fname, "timelapse.h264"))
+            sprintf(cmd, "ffmpeg -y -i timelapse.h264 timelapse.mp4");
+        else
+            sprintf(cmd, "ffmpeg -y -i '%s' %s.mp4", args.fname, args.fname);
+
         system(cmd);
         unlink(args.fname);
         puts("\n\nEncode complete!");

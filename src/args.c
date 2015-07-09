@@ -48,7 +48,7 @@ struct args_t parse_args(int argc, char **argv) {
         .frames         = 0,       // aka infinite
         .delay          = 1000000, // 1s
         .framerate      = 15,
-        .fname          = "timelapse.h264",
+        .fname          = "timelapse.h264", // eventually we want this to be an .mp4; see src/main.c
         .x_display_name = ":0"
     };
 
