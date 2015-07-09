@@ -76,10 +76,18 @@ static int mp4_wrapper(const char *input) {
     }
     strcat(cmd, ".mp4");
 
-    /* run command */
+    /* run command and if successful delete input file */
     puts(cmd);
     if (system(cmd) == 0) {
         unlink(input);
+
+        /* remove double .mp4.mp4 extensions */
+        if (!strcmp(last4, ".mp4")) {
+            char *output = malloc(strlen(input) + 5);
+            strcpy(output, input);
+            strcat(output, ".mp4");
+            rename(output, input);
+        }
     }
 
     return 0;
