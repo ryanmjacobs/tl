@@ -67,7 +67,7 @@ static int mp4_wrapper(const char *input) {
     strcat(cmd, input);
     strcat(cmd, " -c:v copy -an -loglevel quiet ");
 
-    /* determine output filename */
+    /* determine output filename and write the rest of the command */
     const char *last4 = input+strlen(input)-4;
     if (!strcmp(last4, "h264")) {
         strncat(cmd, input, strlen(input)-5);
@@ -77,7 +77,6 @@ static int mp4_wrapper(const char *input) {
     strcat(cmd, ".mp4");
 
     /* run command and if successful delete input file */
-    puts(cmd);
     if (system(cmd) == 0) {
         unlink(input);
 
@@ -88,6 +87,8 @@ static int mp4_wrapper(const char *input) {
             strcat(output, ".mp4");
             rename(output, input);
         }
+
+        puts("# Run `ffmpeg -i in.mp4 out.mp4` to get more compression.");
     }
 
     return 0;
