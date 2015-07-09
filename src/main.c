@@ -65,7 +65,7 @@ static int mp4_wrapper(const char *input) {
         return -1;
     }
     strcat(cmd, input);
-    strcat(cmd, " -c:v copy -an ");
+    strcat(cmd, " -c:v copy -an -loglevel quiet ");
 
     /* determine output filename */
     const char *last4 = input+strlen(input)-4;
