@@ -9,8 +9,8 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-int init_x(const char *display_name);
-int free_x(void);
+int init_X(const char *display_name);
+int free_X(void);
 unsigned char *grab_frame(void);
 int get_frame_width(void);
 int get_frame_height(void);

@@ -27,10 +27,10 @@ int main(int argc, char **argv) {
 
     signal(SIGINT, sigint_handler);
 
-    init_x(args.x_display_name);
+    init_X(args.x_display_name);
     avcodec_register_all();
     encode_loop(args.fname, args.frames, args.delay, args.framerate);
-    free_x();
+    free_X();
 
     /**
      * This is just a quick hack to get an MP4 container by using

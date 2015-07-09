@@ -30,7 +30,7 @@ static Screen  *scr;
 static Display *dpl;
 static struct pixel_t grab_pixel(XImage *img, int x, int y);
 
-int init_x(const char *display_name) {
+int init_X(const char *display_name) {
     dpl = XOpenDisplay(display_name);
     if (dpl == NULL) {
         fprintf(stderr, "error: could not open X display %s\n", display_name);
@@ -46,7 +46,7 @@ int init_x(const char *display_name) {
     return 0;
 }
 
-int free_x(void) {
+int free_X(void) {
     XCloseDisplay(dpl);
 
     return 0;
