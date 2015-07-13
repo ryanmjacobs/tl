@@ -53,7 +53,9 @@ Or, if you're feeling bit brave, submit a pull request. :grimacing:
 * Support drawing a capture box (or even just defining a capture box.)
 
 ## Notes
-There is a C++ branch that you can checkout. I prefer to stick with C, but we
+* After recording, running `ffmpeg -i timelapse.mp4 -c:v libx264 out.mp4` will
+  compress the video significantly (around 75%).
+* There is a C++ branch that you can checkout. I prefer to stick with C, but we
 may need to move to C++ in order to support other OSes or GUIs. The C++ branch
 compiles fine, but as of now, is a little out of date.
 
