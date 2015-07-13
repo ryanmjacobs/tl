@@ -43,7 +43,7 @@ Feel free to submit any ideas, questions, or problems by reporting an issue.
 Or, if you're feeling bit brave, submit a pull request. :grimacing:
 
 ## Packages
-Sorry, no packages are available yet.
+* AUR: https://aur4.archlinux.org/packages/tl/
 
 ## Todo
 * ~~Figure out how to encode an h.264 stream directly into an MP4 container.~~
