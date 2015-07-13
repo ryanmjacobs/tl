@@ -1,13 +1,23 @@
-include config.mk
+## Options
 
+# Name of executable
+EXE?=tl
+
+# Compiler statically? (default is dynamic libs)
+STATIC?=no
+
+# Installation prefix
+PREFIX?=/usr
+
+# Compiler Options
 CC?=gcc
 STRIP?=strip
 CFLAGS=-c -O2 -Wall -std=c99 -pedantic -D_DEFAULT_SOURCE
+
+MAN=$(EXE).1
 SOURCES=$(shell find src/ -type f -name '*.c')
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE?=tl
 
-STATIC?=no
 ifeq ($(STATIC),yes)
 	# Build ffmpeg w/
 	#./configure --prefix=/home/vagrant/builds/usr --enable-libx264 --enable-gpl
@@ -27,17 +37,21 @@ else
 	LDFLAGS=-lX11 -lavformat -lavcodec -lavutil -lswscale -lm
 endif
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(SOURCES) $(EXE)
 
-$(EXECUTABLE): $(OBJECTS)
+$(EXE): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
-	$(STRIP) $(EXECUTABLE)
+	$(STRIP) $(EXE)
 
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
 
+install: all
+	install -Dm 775 $(EXE) $(PREFIX)/bin/$(EXE)
+	install -Dm 644 src/tl.1 $(PREFIX)/share/man/man1/$(MAN)
+
 clean:
-	@rm -vf $(EXECUTABLE)
+	@rm -vf $(EXE)
 	@find src/ -type f -name '*.o' -exec rm -vf {} \;
 
 .PHONY: clean
