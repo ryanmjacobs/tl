@@ -36,6 +36,7 @@ ifeq ($(STATIC),yes)
 
 	LDFLAGS=-static -lX11 -lxcb -lXau -lXdmcp\
 		-lx264 -lm -lz -ldl -lpthread -llzma\
+		-lavformat -lavcodec -lavfilter -lavutil -lswresample -lswscale\
 		-static-libgcc
 else
 	LDFLAGS=-lX11 -lavformat -lavcodec -lavutil -lswscale -lm
