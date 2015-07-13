@@ -1,0 +1,45 @@
+.\"
+.\"  Copyright (C) 2015 Ryan Jacobs <ryan.mjacobs@gmail.com>
+.\"
+
+.TH tl 1 "July 12, 2015"
+.SH NAME
+tl - Painless timelapsing to show off your productivity
+.SH tl
+.B tl [-h] [options...]
+
+.SH DESCRIPTION
+.B tl
+progressively takes screenshots and writes them to an h.264 encoded file. The nice thing about
+.B tl
+is that instead of collecting thousands of screen caps that quickly add up to gigs of diskspace, it progressively encodes the images to a playable file. There isn't a long render time at the end because all of the images are encoded as they are captured.
+
+.PP
+.TP
+.B -f, --frames
+Number of frames to record. 0 means infinite and is the default.
+.TP
+.B -d, --delay
+Delay in seconds between each screenshot. Default is 1.
+.TP
+.B -r, --framerate
+Set playback fps for the encoded video. Default is 15.
+.TP
+.B -o, --output
+Output filename. Default is "timelapse.mp4".
+.TP
+.B -D, --display
+X display name. Default is ":0".
+.TP
+.B -h, --help
+Display the help and exit.
+.TP
+.B --version
+Display version information and exit
+.PP
+
+.SH BUGS
+Please file bugs, suggestions, and pull requests to <https://github.com/ryanmjacobs/tl>
+
+.SH AUTHOR
+Ryan Jacobs <ryan.mjacobs@gmail.com>

@@ -26,7 +26,7 @@ static const char *help_msg =
     "  -f,   --frames             Number of frames to record. 0 means infinite\n"
     "  -d,   --delay              Delay in seconds between each screenshot\n"
     "  -r,   --framerate          Set playback fps for the encoded video\n"
-    "  -o,   --output             Name of output file\n"
+    "  -o,   --output             Output filename\n"
     "  -D,   --display            X display name, default is :0\n"
     "  -h,   --help               Display this help and exit\n"
     "        --version            Display version information and exit\n\n"
