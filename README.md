@@ -18,7 +18,11 @@ Check out [this demo](https://vimeo.com/133315382).
 
 ##### Arch Linux:
 ```bash
-$ pacman -S --needed ffmpeg libx11 base-devel
+$ pacman -S --needed base-devel libx11 ffmpeg
+```
+##### Ubuntu (14.04)
+```bash
+$ apt-get install build-essential libx11-dev libswscale-dev libavcodec-dev libavformat-dev
 ```
 
 (If you know the correct packages for your distro, please submit a pull
