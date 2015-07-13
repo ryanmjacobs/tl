@@ -50,6 +50,10 @@ install: all
 	install -Dm 775 $(EXE) $(PREFIX)/bin/$(EXE)
 	install -Dm 644 src/tl.1 $(PREFIX)/share/man/man1/$(MAN)
 
+uninstall:
+	@rm -vf $(PREFIX)/bin/$(EXE)
+	@rm -vf $(PREFIX)/share/man/man1/$(MAN)
+
 clean:
 	@rm -vf $(EXE)
 	@find src/ -type f -name '*.o' -exec rm -vf {} \;
