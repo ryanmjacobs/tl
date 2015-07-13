@@ -46,7 +46,7 @@ Or, if you're feeling bit brave, submit a pull request. :grimacing:
 * AUR: https://aur4.archlinux.org/packages/tl/
 
 ## Todo
-* ~~Figure out how to encode an h.264 stream directly into an MP4 container.~~
+* Figure out how to encode an h.264 stream directly into an MP4 container.
 * Recompress the video at the end. (Basically `ffmpeg -i in.mp4 -c:v libx264 out.mp4` but using the API.)
 * Maybe add a GUI?
 * Somehow support Mac OS X *and* Windows...
