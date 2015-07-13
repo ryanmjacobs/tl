@@ -57,6 +57,7 @@ Or, if you're feeling bit brave, submit a pull request. :grimacing:
 * Maybe add a GUI?
 * Somehow support Mac OS X *and* Windows...
 * Support drawing a capture box (or even just defining a capture box.)
+* Fix the `Using 'XXX' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking` warning.
 
 ## Notes
 * After recording, running `ffmpeg -i timelapse.mp4 -c:v libx264 out.mp4` will
