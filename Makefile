@@ -22,8 +22,8 @@ ifeq ($(STATIC),yes)
 	# Using a custom build of ffmpeg with:
 	#./configure --prefix=/home/vagrant/builds/usr --enable-libx264 --enable-gpl
 	#            --disable-libopus --disable-vaapi --enable-static --disable-shared
-	#CFLAGS+=-I/home/vagrant/builds/usr/include
-	#LDFLAGS=-L/home/vagrant/builds/usr/lib\
+	CFLAGS+=-I/home/vagrant/builds/usr/include
+	LDFLAGS=-L/home/vagrant/builds/usr/lib\
 			-static -lX11 -lxcb -lXau -lXdmcp\
 			/home/vagrant/builds/usr/lib/libavformat.a\
 			/home/vagrant/builds/usr/lib/libavcodec.a\
@@ -34,7 +34,8 @@ ifeq ($(STATIC),yes)
 			-lx264 -lm -lz -ldl -lpthread -llzma\
 			-static-libgcc
 
-	LDFLAGS=-static -lX11 -lxcb -lXau -lXdmcp\
+	# If only system libraries worked...
+	#LDFLAGS=-static -lX11 -lxcb -lXau -lXdmcp\
 		-lx264 -lm -lz -ldl -lpthread -llzma\
 		-lavformat -lavcodec -lavfilter -lavutil -lswresample -lswscale\
 		-static-libgcc
