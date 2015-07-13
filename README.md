@@ -15,6 +15,15 @@ Check out [this demo](https://vimeo.com/133315382).
 
 (It can also be used as a decent screen recorder with: `tl -d .0333 -r 30`.)
 
+## Downloading
+#### Pre-compiled, statically linked binaries can be downloaded in the [releases](https://github.com/ryanmjacobs/tl/releases).
+
+##### For example you can download and run v0.02:
+```bash
+$ wget https://github.com/ryanmjacobs/tl/releases/download/v0.02/tl-v0.02
+$ ./tl-v0.02 --version
+```
+
 ## Compiling from scratch
 #### Download the required libraries:
 
