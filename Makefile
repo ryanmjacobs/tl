@@ -20,8 +20,13 @@ OBJECTS=$(SOURCES:.c=.o)
 
 ifeq ($(STATIC),yes)
 	# Using a custom build of ffmpeg with:
-	#./configure --prefix=/home/vagrant/builds/usr --enable-libx264 --enable-gpl
-	#            --disable-libopus --disable-vaapi --enable-static --disable-shared
+	#
+	#   > git clone git://source.ffmpeg.org/ffmpeg.git ffmpeg
+	#   > git checkout release/2.7
+	#   > ./configure --prefix=/home/vagrant/builds/usr --enable-libx264 --enable-gpl
+	#                 --disable-libopus --disable-vaapi --enable-static --disable-shared
+	#   > make && make install
+	#
 	CFLAGS+=-I/home/vagrant/builds/usr/include
 	LDFLAGS=-L/home/vagrant/builds/usr/lib\
 			-static -lX11 -lxcb -lXau -lXdmcp\
