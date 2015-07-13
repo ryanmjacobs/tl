@@ -23,7 +23,7 @@ static void sigint_handler(int signal) {
     CAUGHT_SIGINT = 1;
 }
 
-static int mp4_wrapper(const char *input);
+static int mp4_wrapper(const char *ifname);
 
 int main(int argc, char **argv) {
     struct args_t args = parse_args(argc, argv);
@@ -41,11 +41,15 @@ int main(int argc, char **argv) {
      * container without doing that, *please* submit a pull request
      * or contact me!
      */
-    if (mp4_wrapper(args.fname) != 0) {
+    int ret = mp4_wrapper(args.fname);
+    if (ret != 0) {
         puts("We were not able to dump to an MP4 container :(");
         puts("You can still play it, but some video players will choke on it.\n");
-        puts("Next time install ffmpeg/avconv first: e.g. `sudo apt-get install ffmpeg`");
-        puts("(It's optional, but will shrink the file size and play more smoothly.");
+
+        if (ret == -1) {
+            puts("Next time install ffmpeg/avconv first: e.g. `sudo apt-get install ffmpeg`");
+            puts("(It's optional, but will shrink the file size and play more smoothly.");
+        }
     }
 
     return 0;
@@ -54,43 +58,49 @@ int main(int argc, char **argv) {
 /**
  * Quick hack... see main() for more info.
  */
-static int mp4_wrapper(const char *input) {
-    char cmd[512] = "";
+static int mp4_wrapper(const char *ifname) {
+    int len;
+    const char *encoder;
 
     /* use ffmpeg/avconv (whichever is available) */
     if (!system("which ffmpeg &>/dev/null")) {
-        strcat(cmd, "ffmpeg -y -i ");
+        encoder = "ffmpeg";
     } else if (!system("which avconv &>/dev/null")) {
-        strcat(cmd, "avconv -y -i ");
+        encoder = "avconv";
     } else {
         return -1;
     }
-    strcat(cmd, input);
-    strcat(cmd, " -c:v copy -an -loglevel quiet ");
 
-    /* determine output filename and write the rest of the command */
-    const char *last4 = input+strlen(input)-4;
-    if (!strcmp(last4, "h264")) {
-        strncat(cmd, input, strlen(input)-5);
-    } else {
-        strcat(cmd, input);
+    /* output filename = input filename + ".mp4" */
+    len = strlen(ifname);
+    char *ofname = strndup(ifname, len +1 +4);
+    if (ofname == NULL) {
+        perror("strndup");
+        return -2;
     }
-    strcat(cmd, ".mp4");
+    strcat(ofname, ".mp4");
+
+    /* create command string */
+    const char *fmt = "%s -y -i %s -c:v copy -an -loglevel quiet %s";
+    len = snprintf(NULL, 0, fmt, encoder, ifname, ofname);
+    char *cmd = malloc(++len);
+    if (cmd == NULL) {
+        perror("malloc");
+        return -2;
+    }
+    snprintf(cmd, len, fmt, encoder, ifname, ofname);
 
     /* run command and if successful delete input file */
     if (system(cmd) == 0) {
-        unlink(input);
+        unlink(ifname);
+        rename(ofname, ifname);
 
-        /* remove double .mp4.mp4 extensions */
-        if (!strcmp(last4, ".mp4")) {
-            char *output = malloc(strlen(input) + 5);
-            strcpy(output, input);
-            strcat(output, ".mp4");
-            rename(output, input);
-        }
-
-        puts("# Run `ffmpeg -i in.mp4 out.mp4` to get more compression.");
+        printf("# Run `ffmpeg -i %s -c:v libx264 small.mp4` shrink the "
+               "filesize by about 75%%.\n", ifname);
     }
+
+    free(cmd);
+    free(ofname);
 
     return 0;
 }
