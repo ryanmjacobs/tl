@@ -12,13 +12,16 @@ PREFIX?=/usr
 # Compiler Options
 CC?=gcc
 STRIP?=strip
-CFLAGS=-c -O2 -Wall -std=c99 -pedantic -D_DEFAULT_SOURCE
+CFLAGS=-c -O2 -Wall -std=c99 -pedantic
+DEFINES=-D_DEFAULT_SOURCE
 
 MAN=$(EXE).1
 SOURCES=$(shell find src/ -type f -name '*.c')
 OBJECTS=$(SOURCES:.c=.o)
 
 ifeq ($(STATIC),yes)
+	DEFINES+=-D_TL_STATIC_BUILD="\"yes\""
+
 	# Using a custom build of ffmpeg with:
 	#
 	#   > git clone git://source.ffmpeg.org/ffmpeg.git ffmpeg
@@ -45,8 +48,16 @@ ifeq ($(STATIC),yes)
 		-lavformat -lavcodec -lavfilter -lavutil -lswresample -lswscale\
 		-static-libgcc
 else
+	DEFINES+=-D_TL_STATIC_BUILD="\"no\""
+
 	LDFLAGS=-lX11 -lavformat -lavcodec -lavutil -lswscale -lm
 endif
+
+DEFINES+=\
+	-D_TL_COMPILE_DATE="\"$(shell date '+%b %d, %Y - %T %Z')\""\
+	-D_TL_COMMIT_SHA="\"$(shell git rev-parse --verify HEAD)\""\
+	-D_TL_CFLAGS="\"$(CFLAGS)\""\
+	-D_TL_LDFLAGS="\"$(LDFLAGS)\""
 
 all: $(SOURCES) $(EXE)
 
@@ -55,7 +66,8 @@ $(EXE): $(OBJECTS)
 	$(STRIP) $(EXE)
 
 .c.o:
-	$(CC) $(CFLAGS) $< -o $@
+	@echo $(CC) $(CFLAGS) $< -o $@
+	@$(CC) $(CFLAGS) $(DEFINES) $< -o $@
 
 install: all
 	install -Dm 775 $(EXE) $(PREFIX)/bin/$(EXE)

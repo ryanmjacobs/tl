@@ -17,7 +17,16 @@ enum {
 };
 
 static const char *version_msg =
-    "tl v0.01\n"
+    "tl v0.01\n\n"
+
+    "Compiled : "_TL_COMPILE_DATE"\n"
+    "  Commit : "_TL_COMMIT_SHA"\n"
+    "  Static : "_TL_STATIC_BUILD"\n"
+
+    "  CFLAGS : "_TL_CFLAGS"\n"
+    " LDFLAGS : "_TL_LDFLAGS"\n"
+
+    "\n"
     "Copyright (C) 2015 Ryan Jacobs\n";
 
 static const char *help_msg =
