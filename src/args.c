@@ -17,7 +17,7 @@ enum {
 };
 
 static const char *version_msg =
-    "tl v0.01\n\n"
+    "tl v0.02\n\n"
 
     "Compiled : "_TL_COMPILE_DATE"\n"
     "  Commit : "_TL_COMMIT_SHA"\n"
