@@ -13,6 +13,8 @@ Gimp) and start drawing!
 
 Check out [this demo](https://vimeo.com/133315382).
 
+(It can also be used as a decent screen recorder with: `tl -d .0333 -r 30`.)
+
 ## Compiling from scratch
 #### Download the required libraries:
 
