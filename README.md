@@ -18,7 +18,7 @@ Check out [this demo](https://vimeo.com/133315382).
 
 ##### Arch Linux:
 ```bash
-$ pacman -S ffmpeg libx11
+$ pacman -S --needed ffmpeg libx11 base-devel
 ```
 
 (If you know the correct packages for your distro, please submit a pull
