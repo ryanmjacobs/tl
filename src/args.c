@@ -71,7 +71,7 @@ struct args_t parse_args(int argc, char **argv) {
                 }
                 break;
             case 'd':
-                if ((args.delay = (unsigned int) (atof(optarg)*1000000.0)) <= 0) {
+                if ((args.delay = (unsigned int) (atof(optarg)*1000000.0)) < 0) {
                     fprintf(stderr, "error: '%s' is not a valid delay interval\n", optarg);
                     exit(1);
                 }
