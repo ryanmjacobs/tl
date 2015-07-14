@@ -36,11 +36,19 @@ extern int CAUGHT_SIGINT;
 void encode_loop(const char *filename, long long int frames, unsigned int delay,
                  int framerate)
 {
+    FILE *f;
+
+    /* abort if file already exists */
+    if ((f = fopen(filename, "r")) != NULL) {
+        fclose(f);
+        fprintf(stderr, "error: file '%s' already exists\n", filename);
+        exit(1);
+    }
+
     AVCodec *codec;
     AVCodecContext *c= NULL;
     int ret, got_output;
     unsigned int i = 0;
-    FILE *f;
     AVFrame *frame;
     AVPacket pkt;
     uint8_t endcode[] = { 0, 0, 1, 0xb7 };
@@ -70,16 +78,20 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
     av_opt_set(c->priv_data, "preset", "slow", 0);
     av_opt_set_int(c, "crf", 20, AV_OPT_SEARCH_CHILDREN);
 
-    /* open it */
+    /* open codec */
     if (avcodec_open2(c, codec, NULL) < 0) {
         fprintf(stderr, "Could not open codec\n");
         exit(1);
     }
+
+    /* open file */
     f = fopen(filename, "wb");
     if (!f) {
         fprintf(stderr, "Could not open %s\n", filename);
         exit(1);
     }
+
+    /* allocate video frame */
     frame = av_frame_alloc();
     if (!frame) {
         fprintf(stderr, "Could not allocate video frame\n");
