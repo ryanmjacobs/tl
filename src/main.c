@@ -95,7 +95,7 @@ static int mp4_wrapper(const char *ifname) {
         unlink(ifname);
         rename(ofname, ifname);
 
-        printf("# Run `ffmpeg -i %s -c:v libx264 small.mp4` shrink the "
+        printf("# Run `ffmpeg -i %s -c:v libx264 small.mp4` to shrink the "
                "filesize by about 75%%.\n", ifname);
     }
 
