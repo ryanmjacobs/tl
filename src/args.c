@@ -8,8 +8,9 @@
 
 #include "args.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
 #include <getopt.h>
 
 enum {
@@ -52,6 +53,17 @@ static const struct option long_options[] = {
     { NULL, 0, NULL, 0 }
 };
 
+static int file_exists(const char *fname) {
+    FILE *fp = fopen(fname, "r");
+
+    if (fp) {
+        fclose(fp);
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 struct args_t parse_args(int argc, char **argv) {
     struct args_t args = {
         .frames         = 0,       // aka infinite
@@ -60,6 +72,22 @@ struct args_t parse_args(int argc, char **argv) {
         .fname          = "timelapse.mp4",
         .x_display_name = ":0"
     };
+
+    /* decide on the default filename */
+    if (file_exists(args.fname)) {
+        unsigned int i;
+
+        for (i = 1; i < UINT_MAX; i++) {
+            int len = snprintf(NULL, 0, "timelapse_%u.mp4", i);
+            args.fname = malloc(++len);
+            snprintf(args.fname, len, "timelapse_%u.mp4", i);
+
+            if (!file_exists(args.fname))
+                break;
+
+            free(args.fname);
+        }
+    }
 
     char c;
     while ((c = getopt_long(argc, argv, "f:d:r:o:D:h", long_options, NULL)) != -1) {
