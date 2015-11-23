@@ -3,9 +3,9 @@
 
 **tl** progressively captures and encodes screenshots to an MP4 file. Unlike
 other timelapse tools, it doesn't store thousands and thousands of images only
-to encode them later. **It captures and encodes in realtime!** It *won't* thrash
-your disk with gigs upon gigs of screenshots, and it *won't* record at 30 fps
-when you only really need 1.
+to encode them later. **It captures and encodes in realtime!** It is *not* going
+to thrash your disk with gigs upon gigs of screenshots, and it is *not* going
+to record at 30 fps when you only really need 1 fps.
 
 It's a great way to show off how productive you are! Plus it looks cool! So
 hit record and start up a coding session! Or boot up Photoshop (or more likely
