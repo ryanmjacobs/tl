@@ -11,7 +11,7 @@ It's a great way to show off how productive you are! Plus it looks cool! So
 hit record and start up a coding session! Or boot up Photoshop (or more likely
 Gimp) and start drawing!
 
-Check out [this demo](https://vimeo.com/133315382).
+[![Demo](demo_link.png)](https://vimeo.com/133315382)
 
 (It can also be used as a decent screen recorder with: `tl -d .0333 -r 30`.)
 
