@@ -78,4 +78,4 @@ compiles fine, but as of now, is a little out of date.
 ## License
 MIT License - see the [LICENSE](https://raw.githubusercontent.com/ryanmjacobs/tl/master/LICENSE)
 
-Copyright (c) 2016 Ryan Jacobs
+Copyright (c) 2017 Ryan Jacobs
