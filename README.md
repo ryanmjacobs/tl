@@ -1,7 +1,7 @@
 # tl
 #### Painless timelapsing to show off your productivity.
 
-**tl** progressively captures and encodes screenshots to an MP4 file. Unlike
+**tl** psrogressively captures and encodes screenshots to an MP4 file. Unlike
 other timelapse tools, it doesn't store thousands and thousands of images only
 to encode them later. **It captures and encodes in realtime!** It is *not* going
 to thrash your disk with gigs upon gigs of screenshots, and it is *not* going
