@@ -11,7 +11,6 @@ PREFIX?=/usr
 
 # Compiler Options
 CC?=gcc
-STRIP?=strip
 CFLAGS=-c -O2 -Wall -std=c99 -pedantic
 DEFINES=-D_DEFAULT_SOURCE
 
@@ -63,7 +62,6 @@ all: $(SOURCES) $(EXE)
 
 $(EXE): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
-	$(STRIP) $(EXE)
 
 .c.o:
 	@echo $(CC) $(CFLAGS) $< -o $@
