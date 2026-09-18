@@ -31,7 +31,11 @@ int main(int argc, char **argv) {
     signal(SIGINT, sigint_handler);
 
     init_X(args.x_display_name);
+    /* avcodec_register_all() was removed in libavcodec 58 (FFmpeg 4.0);
+       registration is automatic there, so only call it on older versions. */
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 0, 0)
     avcodec_register_all();
+#endif
     encode_loop(args.fname, args.frames, args.delay, args.framerate);
     free_X();
 

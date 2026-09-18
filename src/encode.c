@@ -33,6 +33,43 @@ extern int CAUGHT_SIGINT;
 #define av_frame_free  avcodec_free_frame
 #endif
 
+/**
+ * Send one frame to the encoder and write out any packets it produces.
+ *
+ * The send/receive API (avcodec_send_frame + avcodec_receive_packet)
+ * replaced the removed avcodec_encode_video2(). A single sent frame may
+ * yield zero, one, or several packets. Pass frame == NULL to flush/drain
+ * the encoder at end of stream.
+ *
+ * Returns 0 on success (including the EAGAIN/EOF "no packet yet" cases),
+ * or a negative AVERROR on failure.
+ */
+static int encode_frame(AVCodecContext *c, AVFrame *frame, AVPacket *pkt,
+                        FILE *f, unsigned int *count)
+{
+    int ret = avcodec_send_frame(c, frame);
+    if (ret < 0) {
+        fprintf(stderr, "Error sending frame to encoder\n");
+        return ret;
+    }
+
+    while (ret >= 0) {
+        ret = avcodec_receive_packet(c, pkt);
+        if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+            return 0;
+        else if (ret < 0) {
+            fprintf(stderr, "Error during encoding\n");
+            return ret;
+        }
+
+        printf("Wrote frame %3d (size=%5d)\n", (*count)++, pkt->size);
+        fwrite(pkt->data, 1, pkt->size, f);
+        av_packet_unref(pkt);
+    }
+
+    return 0;
+}
+
 void encode_loop(const char *filename, long long int frames, unsigned int delay,
                  int framerate)
 {
@@ -45,12 +82,13 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
         exit(1);
     }
 
-    AVCodec *codec;
+    const AVCodec *codec;
     AVCodecContext *c= NULL;
-    int ret, got_output;
+    int ret;
     unsigned int i = 0;
+    int64_t pts = 0;
     AVFrame *frame;
-    AVPacket pkt;
+    AVPacket *pkt;
     uint8_t endcode[] = { 0, 0, 1, 0xb7 };
 
     /* find the mpeg1 video encoder */
@@ -91,6 +129,13 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
         exit(1);
     }
 
+    /* allocate reusable packet for encoder output */
+    pkt = av_packet_alloc();
+    if (!pkt) {
+        fprintf(stderr, "Could not allocate packet\n");
+        exit(1);
+    }
+
     /* allocate video frame */
     frame = av_frame_alloc();
     if (!frame) {
@@ -121,9 +166,6 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
 
         usleep(delay);
 
-        av_init_packet(&pkt);
-        pkt.data = NULL;    // packet data will be allocated by the encoder
-        pkt.size = 0;
         fflush(stdout);
 
         struct SwsContext *ctx =
@@ -137,42 +179,24 @@ void encode_loop(const char *filename, long long int frames, unsigned int delay,
         sws_scale(ctx, data_in, inline_size, 0, c->height,
                   frame->data, frame->linesize);
 
-        frame->pts = i;
+        frame->pts = pts++;
         /* encode the image */
-        ret = avcodec_encode_video2(c, &pkt, frame, &got_output);
-        if (ret < 0) {
-            fprintf(stderr, "Error encoding frame\n");
+        if (encode_frame(c, frame, pkt, f, &i) < 0)
             exit(1);
-        }
-        if (got_output) {
-            printf("Wrote frame %d (size=%d)\n", i++, pkt.size);
-            fwrite(pkt.data, 1, pkt.size, f);
-            av_free_packet(&pkt);
-        }
 
         free(rgb_buf);
         sws_freeContext(ctx);
     }
-    /* get the delayed frames */
-    for (got_output = 1; got_output; i++) {
-        fflush(stdout);
-        ret = avcodec_encode_video2(c, &pkt, NULL, &got_output);
-        if (ret < 0) {
-            fprintf(stderr, "Error encoding frame\n");
-            exit(1);
-        }
-        if (got_output) {
-            printf("Wrote frame %3d (size=%5d)\n", i, pkt.size);
-            fwrite(pkt.data, 1, pkt.size, f);
-            av_free_packet(&pkt);
-        }
-    }
+    /* flush the encoder to get any delayed frames */
+    fflush(stdout);
+    if (encode_frame(c, NULL, pkt, f, &i) < 0)
+        exit(1);
     /* add sequence end code to have a real mpeg file */
     fwrite(endcode, 1, sizeof(endcode), f);
     fclose(f);
-    avcodec_close(c);
-    av_free(c);
+    avcodec_free_context(&c);
     av_freep(&frame->data[0]);
     av_frame_free(&frame);
+    av_packet_free(&pkt);
     printf("\n");
 }
