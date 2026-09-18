@@ -1,7 +1,7 @@
 /**
  * @file    frame.h
  * @brief   Generate each frame.
- * @author  Ryan Jacobs <ryan.mjacobs@gmail.com>
+ * @author  Ryan Jacobs <ryan@rmj.us>
  * @date    March 18, 2015
  * @bug     No known bugs.
  */

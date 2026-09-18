@@ -1,7 +1,7 @@
 /**
  * @file    args.h
  * @brief   Parse and process command line arguments.
- * @author  Ryan Jacobs <ryan.mjacobs@gmail.com>
+ * @author  Ryan Jacobs <ryan@rmj.us>
  * @date    March 19, 2015
  * @bug     No known bugs.
  */

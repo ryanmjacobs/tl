@@ -1,7 +1,7 @@
 /**
  * @file    args.c
  * @brief   Parse and process command line arguments.
- * @author  Ryan Jacobs <ryan.mjacobs@gmail.com>
+ * @author  Ryan Jacobs <ryan@rmj.us>
  * @date    March 19, 2015
  * @bug     No known bugs.
  */
@@ -40,7 +40,7 @@ static const char *help_msg =
     "  -D,   --display            X display name, default is :0\n"
     "  -h,   --help               Display this help and exit\n"
     "        --version            Display version information and exit\n\n"
-    "Report bugs to <ryan.mjacobs@gmail.com>\n";
+    "Report bugs to <ryan@rmj.us>\n";
 
 static const struct option long_options[] = {
     { "frames",      optional_argument, NULL, 'f'          },
