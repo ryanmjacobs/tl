@@ -28,7 +28,7 @@ static const char *version_msg =
     " LDFLAGS : "_TL_LDFLAGS"\n"
 
     "\n"
-    "Copyright (C) 2015 Ryan Jacobs\n";
+    "Copyright (C) 2015-2026 Ryan Jacobs\n";
 
 static const char *help_msg =
     "Usage: %s [-h] [options...]\n"
